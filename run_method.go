@@ -5,16 +5,20 @@ import (
   "github.com/golang/glog"
 )
 
-func RunMethodIfExists(nameInterface string, any interface{}, nameFunc string, args ...interface{}) ([]reflect.Value, bool) {
+func RunMethodIfExists(any interface{}, nameFunc string, args ...interface{}) ([]reflect.Value, bool) {
+  nameInterface := "unknown"
+  if reflect.TypeOf(any).Elem() != nil {
+    nameInterface = reflect.TypeOf(any).Elem().Name()
+  }
   v := reflect.ValueOf(any)
 	method := v.MethodByName(nameFunc)
 	if method.Kind() == reflect.Invalid {
-    glog.Warningf("WRN: NOT FOUND runMethodIfExists(%s.%s)\n", nameInterface, nameFunc)
+    glog.Warningf("WRN: NOT FOUND runMethodIfExists(%s.%s)", nameInterface, nameFunc)
 		return []reflect.Value{}, false
 	}
 
 	if method.Type().NumIn() != len(args) {
-    glog.Errorf("ERR: runMethodIfExists(%s.%s): expected %d args, actually %d.\n", 
+    glog.Errorf("ERR: runMethodIfExists(%s.%s): expected %d args, actually %d.", 
       nameInterface,
 			nameFunc,
 			len(args),
@@ -29,7 +33,7 @@ func RunMethodIfExists(nameInterface string, any interface{}, nameFunc string, a
 		argVal := reflect.ValueOf(arg)
 
 		if argVal.Type() != method.Type().In(i) {
-      glog.Errorf("ERR: runMethodIfExists(%s): expected arg %d to have type %v.\n", 
+      glog.Errorf("ERR: runMethodIfExists(%s): expected arg %d to have type %v.", 
         nameFunc,
 				i,
 				argVal.Type())
@@ -38,7 +42,7 @@ func RunMethodIfExists(nameInterface string, any interface{}, nameFunc string, a
 		argVals[i] = argVal
 	}
   if glog.V(9) {
-    glog.Infof("DBG: Call(%s.%s)\n", nameInterface, nameFunc)
+    glog.Infof("DBG: Call(%s.%s)", nameInterface, nameFunc)
   }
 	return method.Call(argVals), true
 }
