@@ -396,3 +396,15 @@ func ValueToString(info interface{}) (string, bool) {
 	}
   return res, false
 }
+
+func GetType(myvar interface{}) string {
+  t := reflect.TypeOf(myvar)
+  if t == nil {
+    return "<nil>"
+  }
+  if t.Kind() == reflect.Ptr {
+    return "*" + t.Elem().Name()
+  } else {
+    return t.Name()
+  }
+}
