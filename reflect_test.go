@@ -120,3 +120,30 @@ func TestReflect(t *testing.T) {
   assert.Equal(t, false, FieldExists(user1, "e-mail"))
 }
 
+func TestCheckValue2String(t *testing.T) {
+  
+  res, ok := ValueToString("112")
+  assert.Equal(t, true, ok)
+  assert.Equal(t, "112", res)
+  
+  res, ok = ValueToString(112)
+  assert.Equal(t, true, ok)
+  assert.Equal(t, "112", res)
+
+  res, ok = ValueToString(-112)
+  assert.Equal(t, true, ok)
+  assert.Equal(t, "-112", res)
+
+  res, ok = ValueToString(-112.4568)
+  assert.Equal(t, true, ok)
+  assert.Equal(t, "-112.4568", res)
+
+
+  // WARNING
+  res, ok = ValueToString(-3453455645645672.45345646474568)
+  assert.Equal(t, true, ok)
+  assert.Equal(t, "-3.4534556456456725e+15", res)
+
+}
+
+
