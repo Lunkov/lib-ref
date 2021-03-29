@@ -16,17 +16,25 @@ func AppendChildMap(parentMap *map[string]interface{}, child string, childMap ma
   }
 }
 
-func UnionMaps(dstMap *map[string]interface{}, newMap *map[string]interface{}) {
-  if dstMap != nil && newMap != nil {
-    for k, v := range (*newMap) {
+func UnionMaps(dstMap *map[string]interface{}, srcMap *map[string]interface{}) {
+  if dstMap != nil && srcMap != nil {
+    for k, v := range (*srcMap) {
+      (*dstMap)[k] = v
+    }
+  }
+}
+
+func UnionMapsLK(dstMap *map[string]interface{}, srcMap *map[string]interface{}) {
+  if dstMap != nil && srcMap != nil {
+    for k, v := range (*srcMap) {
       (*dstMap)[strings.ToLower(k)] = v
     }
   }
 }
 
-func UnionMapsStr(dstMap *map[string]interface{}, newMap *map[string]string) {
-  if dstMap != nil && newMap != nil {
-    for k, v := range (*newMap) {
+func UnionMapsStr(dstMap *map[string]interface{}, srcMap *map[string]string) {
+  if dstMap != nil && srcMap != nil {
+    for k, v := range (*srcMap) {
       (*dstMap)[k] = v
     }
   }
