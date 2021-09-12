@@ -3,11 +3,14 @@ package ref
 import (
   "strings"
   "reflect"
+  "time"
   "math"
   "strconv"
   "github.com/google/uuid"
   "github.com/golang/glog"
 )
+
+var timeKind = reflect.TypeOf(time.Time{}).Kind()
 
 func ConvertToMap(a interface{}) map[string]interface{} {
   res := make(map[string]interface{})
@@ -166,6 +169,15 @@ func ConvertFromMap(a interface{}, data *map[string]interface{}) {
                         v.Field(i).SetInt(d.(int64)) //reflect.ValueOf(d))
                       }
                       break
+            case timeKind:
+                      d, ok := (*data)[field]
+                      if ok {
+                        if glog.V(9) {
+                          glog.Infof("DBG: ConvertFromMap Model(%s:%s) Time (%v)", v.Type(), field, v.Field(i).Kind())
+                        }
+                        v.Field(i).SetString(d.(time.Time).String())
+                      }
+                      break
             case reflect.String:
                       d, ok := (*data)[field]
                       if ok {
@@ -207,6 +219,11 @@ func ConvertFromMap(a interface{}, data *map[string]interface{}) {
                             if glog.V(9) {
                               glog.Infof("DBG: x is string") // here v has type interface{}
                             }
+                        case time.Time:
+                            if glog.V(9) {
+                              glog.Infof("DBG: x is time.Time") // here v has type interface{}
+                            }
+                            d = d.(time.Time).String()
                         default:
                             if glog.V(9) {
                               glog.Infof("DBG: type unknown")        // here v has type interface{}
@@ -387,6 +404,8 @@ func ValueToString(info interface{}) (string, bool) {
 		//return math.Float64bits(real(c)) == 0 && math.Float64bits(imag(c)) == 0
 	case reflect.String:
     return v.String(), true
+	case timeKind:
+    return v.String(), true    
 	case reflect.Array:
 		return res, false
   case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice, reflect.UnsafePointer:
